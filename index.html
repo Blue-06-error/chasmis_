@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Gentle Reminder</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: url('https://i.pinimg.com/1200x/e6/bc/ac/e6bcac1673ff6b966e6db089066a7d61.jpg') center / cover no-repeat;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      color: #333;
+      position: relative;
+      overflow: hidden;
+    }
+
+    
+
+    body.dark {
+      background: url('https://i.pinimg.com/1200x/e6/bc/ac/e6bcac1673ff6b966e6db089066a7d61.jpg') center / cover no-repeat;
+      color: #eee;
+    }
+
+    
+
+    .card {
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.3); /* 70% opacity */
+      padding: 2.5rem;
+      border-radius: 18px;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    body.dark .card {
+      background: rgba(30, 30, 40, 0.3); /* 70% opacity */
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      color: #3a6ea5;
+    }
+
+    body.dark h1 {
+      color: #9ecbff;
+    }
+
+    body.dark p {
+      color: #8fc1ff; /* softer blue for dark mode */
+    }
+
+    p {
+      font-size: 1.4rem; /* increased gentle thought font */
+      line-height: 1.7;
+      margin: 0;
+      padding: 1rem;
+      color: #2f6fb2; /* gentle message in blue */
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 0.8rem;
+    }
+
+    select {
+      padding: 0.6rem 0.8rem;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      height: 38px;
+    }
+
+    #toggleMode {
+      margin-top: 0;
+      height: 38px;
+      width: 38px;
+      padding: 0;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    button {
+      margin-top: 1.2rem;
+      padding: 0.6rem 1.4rem;
+      border: none;
+      border-radius: 20px;
+      background-color: #3a6ea5;
+      color: #fff;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .sticker {
+      position: absolute;
+      font-size: 1.4rem;
+      animation: floatUp 2.5s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-60px); }
+    }
+
+    footer {
+      margin-top: 1.8rem;
+      font-size: 0.8rem;
+      color: #777;
+    }
+
+    body.dark footer {
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>For Chasmis, Today</h1>
+
+    <div class="controls">
+      <select id="mood">
+        <option value="auto">How does today feel?</option>
+        <option value="soft">Soft</option>
+        <option value="heavy">Heavy</option>
+        <option value="reassuring">Reassurance</option>
+      </select>
+      <button id="toggleMode">🌙</button>
+    </div>
+
+    <p id="message"></p>
+    <div id="reminder" style="display:none; margin-top:1rem; font-size:1.3rem; font-weight:600; color:#e75480;">Chasmis, Garam Pani pilena &lt;3</div>
+    <button id="newMsg">A new gentle thought</button>
+
+    <footer>
+      Made with care, not pressure.
+    </footer>
+  </div>
+
+  <script>
+    const messages = {
+      soft: [
+        "Some days are meant for softness.",
+        "You are allowed to move slowly today.",
+        "Rest is a valid plan.",
+        "Gentleness counts as progress.",
+        "It’s okay to let today be simple.",
+        "Quiet days still matter."
+      ],
+      heavy: [
+        "Some days are heavy. You don’t have to carry them perfectly.",
+        "It’s okay if today is about surviving, not shining.",
+        "Hard days do not erase who you are.",
+        "You don’t have to be strong all the time."
+      ],
+      reassuring: [
+        "Chasmis, you are doing enough.",
+        "You are not broken.",
+        "Your pace is valid.",
+        "You are enough as you are."
+      ],
+      thereForYou: [
+        "I’m here, even on days when things feel heavy.",
+        "You don’t have to face today alone.",
+        "I’ll be here — today and tomorrow."
+      ],
+      fromMe: [
+        "Chasmis, on days when this feels heavy — remember there’s someone who cares deeply and is always here for you."
+      ]
+    };
+
+    function getDailyMessage() {
+      const today = new Date();
+      const seed = today.getFullYear() + today.getMonth() + today.getDate();
+
+      if (seed % 25 === 0) {
+        return messages.fromMe[0];
+      }
+
+      const groups = ['soft', 'heavy', 'reassuring'];
+      const group = groups[seed % groups.length];
+      const arr = messages[group];
+
+      return arr[seed % arr.length];
+    }
+
+    let reminderShown = false;
+
+    function showReminder() {
+      if (reminderShown) return;
+      const r = document.getElementById('reminder');
+      r.style.display = 'block';
+      r.style.opacity = '0';
+      r.style.transition = 'opacity 1.2s ease';
+      setTimeout(() => {
+        r.style.opacity = '1';
+      }, 100);
+      reminderShown = true;
+    }
+
+    function showRandomMessage() {
+      const mood = document.getElementById('mood').value;
+      const available = mood !== 'auto'
+        ? [mood]
+        : ['soft', 'heavy', 'reassuring', 'thereForYou'];
+
+      const group = available[Math.floor(Math.random() * available.length)];
+      const arr = messages[group];
+      const msg = arr[Math.floor(Math.random() * arr.length)];
+
+      document.getElementById('message').innerText = msg;
+      showReminder();
+      dropSticker();
+    }
+
+    function dropSticker() {
+      const stickers = ['💙', '🌸', '✨', '🫧'];
+      const s = document.createElement('div');
+      s.className = 'sticker';
+      s.innerText = stickers[Math.floor(Math.random() * stickers.length)];
+      s.style.left = Math.random() * 80 + '%';
+      s.style.bottom = '20px';
+      document.querySelector('.card').appendChild(s);
+      setTimeout(() => s.remove(), 2500);
+    }
+
+    const msgEl = document.getElementById('message');
+    msgEl.innerText = getDailyMessage();
+
+    document.getElementById('newMsg').addEventListener('click', showRandomMessage);
+
+    const savedMode = localStorage.getItem('mode');
+    if (savedMode === 'dark') {
+      document.body.classList.add('dark');
+    }
+
+    document.getElementById('toggleMode').addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('mode', document.body.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>
